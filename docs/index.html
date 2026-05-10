@@ -1,0 +1,420 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@packrift/dim-weight-calculator</title>
+    <meta
+      name="description"
+      content="A dependency-free JavaScript package and browser demo for dimensional weight and billable weight calculations."
+    >
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #1f2933;
+        --muted: #5f6f7f;
+        --line: #d9e2ec;
+        --paper: #ffffff;
+        --panel: #f7f9fb;
+        --accent: #1f7a5f;
+        --accent-strong: #155e49;
+        --warn: #a05a00;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--panel);
+        color: var(--ink);
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", sans-serif;
+        line-height: 1.5;
+      }
+
+      a {
+        color: var(--accent-strong);
+      }
+
+      header {
+        background: var(--paper);
+        border-bottom: 1px solid var(--line);
+      }
+
+      .wrap {
+        width: min(1120px, calc(100% - 32px));
+        margin: 0 auto;
+      }
+
+      .hero {
+        display: grid;
+        grid-template-columns: minmax(0, 1.1fr) minmax(280px, 0.9fr);
+        gap: 32px;
+        align-items: center;
+        padding: 48px 0 40px;
+      }
+
+      h1 {
+        margin: 0 0 12px;
+        font-size: clamp(2rem, 4vw, 3.6rem);
+        line-height: 1;
+        letter-spacing: 0;
+      }
+
+      h2 {
+        margin: 0 0 14px;
+        font-size: 1.35rem;
+        letter-spacing: 0;
+      }
+
+      p {
+        margin: 0 0 16px;
+      }
+
+      .lede {
+        max-width: 680px;
+        color: var(--muted);
+        font-size: 1.05rem;
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 24px;
+      }
+
+      .button {
+        display: inline-flex;
+        align-items: center;
+        min-height: 42px;
+        border-radius: 8px;
+        border: 1px solid var(--line);
+        padding: 0 14px;
+        background: var(--paper);
+        color: var(--ink);
+        font-weight: 700;
+        text-decoration: none;
+      }
+
+      .button.primary {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #ffffff;
+      }
+
+      .formula {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background:
+          linear-gradient(135deg, rgba(31, 122, 95, 0.08), transparent 54%),
+          var(--paper);
+        padding: 22px;
+      }
+
+      .formula strong {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--accent-strong);
+        font-size: 0.82rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .formula code {
+        display: block;
+        overflow-x: auto;
+        color: var(--ink);
+        font: 700 1.05rem/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas,
+          monospace;
+        white-space: nowrap;
+      }
+
+      main {
+        padding: 34px 0 56px;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: minmax(280px, 0.9fr) minmax(0, 1.1fr);
+        gap: 20px;
+        align-items: start;
+      }
+
+      .panel {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--paper);
+        padding: 20px;
+      }
+
+      .fields {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      label {
+        display: grid;
+        gap: 6px;
+        color: var(--muted);
+        font-size: 0.86rem;
+        font-weight: 700;
+      }
+
+      input,
+      select {
+        min-height: 42px;
+        width: 100%;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 8px 10px;
+        color: var(--ink);
+        font: inherit;
+      }
+
+      input:focus,
+      select:focus {
+        border-color: var(--accent);
+        outline: 3px solid rgba(31, 122, 95, 0.16);
+      }
+
+      .full {
+        grid-column: 1 / -1;
+      }
+
+      .results {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+        margin: 18px 0;
+      }
+
+      .metric {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 14px;
+        background: var(--panel);
+      }
+
+      .metric span {
+        display: block;
+        color: var(--muted);
+        font-size: 0.78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+      }
+
+      .metric strong {
+        display: block;
+        margin-top: 4px;
+        font-size: 1.5rem;
+      }
+
+      pre {
+        overflow-x: auto;
+        margin: 0;
+        border-radius: 8px;
+        background: #202a33;
+        color: #e6edf3;
+        padding: 16px;
+        font: 0.92rem/1.55 ui-monospace, SFMono-Regular, Menlo, Consolas,
+          monospace;
+      }
+
+      .note {
+        color: var(--muted);
+        font-size: 0.92rem;
+      }
+
+      .warning {
+        color: var(--warn);
+      }
+
+      footer {
+        border-top: 1px solid var(--line);
+        background: var(--paper);
+        padding: 24px 0;
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+
+      @media (max-width: 780px) {
+        .hero,
+        .grid {
+          grid-template-columns: 1fr;
+        }
+
+        .fields,
+        .results {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="wrap hero">
+        <div>
+          <h1>@packrift/dim-weight-calculator</h1>
+          <p class="lede">
+            A small JavaScript package for calculating dimensional weight,
+            billable weight, and divisor comparisons in shipping and packaging
+            workflows.
+          </p>
+          <div class="actions">
+            <a class="button primary" href="https://github.com/Packrift/dim-weight-calculator">View repo</a>
+            <a class="button" href="https://packrift.com/pages/dimensional-weight-calculator">Packrift calculator</a>
+            <a class="button" href="https://packrift.com/pages/free-dimensional-weight-calculator-widget">Free widget</a>
+          </div>
+        </div>
+        <div class="formula" aria-label="Dimensional weight formula">
+          <strong>Formula</strong>
+          <code>(length x width x height) / divisor</code>
+        </div>
+      </div>
+    </header>
+
+    <main class="wrap">
+      <div class="grid">
+        <section class="panel" aria-labelledby="demo-title">
+          <h2 id="demo-title">Browser Demo</h2>
+          <div class="fields">
+            <label>
+              Length
+              <input id="length" type="number" min="0" step="0.01" value="16">
+            </label>
+            <label>
+              Width
+              <input id="width" type="number" min="0" step="0.01" value="12">
+            </label>
+            <label>
+              Height
+              <input id="height" type="number" min="0" step="0.01" value="8">
+            </label>
+            <label>
+              Actual weight
+              <input id="actualWeight" type="number" min="0" step="0.01" value="9.4">
+            </label>
+            <label>
+              Divisor
+              <select id="divisor">
+                <option value="139">139 parcel</option>
+                <option value="166">166 parcel</option>
+                <option value="5000">5000 metric</option>
+                <option value="6000">6000 metric</option>
+              </select>
+            </label>
+            <label>
+              Rounding
+              <select id="round">
+                <option value="ceil">Ceil</option>
+                <option value="round">Round to 2 decimals</option>
+                <option value="none">None</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="results" aria-live="polite">
+            <div class="metric">
+              <span>Volume</span>
+              <strong id="volume">1536</strong>
+            </div>
+            <div class="metric">
+              <span>Dim weight</span>
+              <strong id="dimWeight">12</strong>
+            </div>
+            <div class="metric">
+              <span>Billable</span>
+              <strong id="billableWeight">12</strong>
+            </div>
+          </div>
+
+          <p id="chargeNote" class="note">Dimensional weight is higher than actual weight.</p>
+          <p class="note warning">
+            Confirm carrier-specific divisors, units, and rounding rules before
+            charging customers or rating freight.
+          </p>
+        </section>
+
+        <section class="panel" aria-labelledby="code-title">
+          <h2 id="code-title">Package Usage</h2>
+          <pre><code>import {
+  calculateBillableWeight,
+  calculateDimensionalWeight
+} from "@packrift/dim-weight-calculator";
+
+const dimWeight = calculateDimensionalWeight({
+  length: 16,
+  width: 12,
+  height: 8,
+  divisor: 139
+});
+
+const billable = calculateBillableWeight({
+  actualWeight: 9.4,
+  dimensions: { length: 16, width: 12, height: 8 },
+  divisor: 139
+});</code></pre>
+        </section>
+      </div>
+    </main>
+
+    <footer>
+      <div class="wrap">
+        MIT licensed. Built as a focused developer utility by Packrift.
+      </div>
+    </footer>
+
+    <script>
+      const fields = ["length", "width", "height", "actualWeight", "divisor", "round"]
+        .map((id) => document.getElementById(id));
+
+      function positiveNumber(id) {
+        const value = Number(document.getElementById(id).value);
+        return Number.isFinite(value) && value > 0 ? value : 0;
+      }
+
+      function applyRounding(value, mode) {
+        if (mode === "none") return value;
+        if (mode === "round") return Math.round((value + Number.EPSILON) * 100) / 100;
+        return Math.ceil(value);
+      }
+
+      function format(value) {
+        return Number.isInteger(value) ? String(value) : value.toFixed(2);
+      }
+
+      function update() {
+        const length = positiveNumber("length");
+        const width = positiveNumber("width");
+        const height = positiveNumber("height");
+        const actual = positiveNumber("actualWeight");
+        const divisor = positiveNumber("divisor");
+        const round = document.getElementById("round").value;
+        const volume = length * width * height;
+        const dimWeight = divisor > 0 ? applyRounding(volume / divisor, round) : 0;
+        const actualWeight = applyRounding(actual, round);
+        const billableWeight = Math.max(actualWeight, dimWeight);
+        let note = "Actual and dimensional weight are equal.";
+
+        if (dimWeight > actualWeight) {
+          note = "Dimensional weight is higher than actual weight.";
+        } else if (actualWeight > dimWeight) {
+          note = "Actual weight is higher than dimensional weight.";
+        }
+
+        document.getElementById("volume").textContent = format(volume);
+        document.getElementById("dimWeight").textContent = format(dimWeight);
+        document.getElementById("billableWeight").textContent = format(billableWeight);
+        document.getElementById("chargeNote").textContent = note;
+      }
+
+      fields.forEach((field) => field.addEventListener("input", update));
+      update();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,40 @@
+{
+  "name": "@packrift/dim-weight-calculator",
+  "version": "0.1.0",
+  "description": "Dependency-free JavaScript utilities for dimensional weight and billable shipping weight calculations.",
+  "type": "module",
+  "main": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "scripts": {
+    "test": "node --test"
+  },
+  "keywords": [
+    "dimensional-weight",
+    "dim-weight",
+    "shipping",
+    "packaging",
+    "billable-weight",
+    "ecommerce",
+    "fulfillment"
+  ],
+  "homepage": "https://packrift.com/pages/dimensional-weight-calculator",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Packrift/dim-weight-calculator.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Packrift/dim-weight-calculator/issues"
+  },
+  "license": "MIT",
+  "files": [
+    "src",
+    "docs",
+    "README.md",
+    "LICENSE"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
+}
