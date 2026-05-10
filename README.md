@@ -123,6 +123,10 @@ Always confirm the divisor, rounding rules, and units required by your carrier, 
 
 `docs/index.html` contains a static calculator/demo page suitable for GitHub Pages.
 
+## Guides
+
+- [Carrier divisor reference](docs/carrier-divisor-reference.md)
+
 ## License
 
 MIT
